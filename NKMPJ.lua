@@ -1,4 +1,4 @@
--- NKMPJ HUB V8.1.17.2 | SMART FARM BENCHMARK | ONE FILE
+-- NKMPJ HUB V8.1.17.3 | SMART FARM BENCHMARK | ONE FILE
 -- Exact V7.9.4 farm function restored without internal modifications.
 -- V8 Premium Compact UI and Live Size operate from independent UI event listeners.
 -- If the farm stops again, the Quick HUD displays the game's actual stop reason.
@@ -68,7 +68,7 @@ if type(previousSession)=='table' then
  end
  previousSession.alive=false
 end
-local titanSession={alive=true,version='8.1.17.2',startedAt=os.clock()}
+local titanSession={alive=true,version='8.1.17.3',startedAt=os.clock()}
 _G[SESSION_KEY]=titanSession
 -- On re-execute, shut down the PREVIOUS UI/core BEFORE the new farm core binds keys.
 do
@@ -1881,7 +1881,7 @@ local function farm(generation)
       st.actualRate=math.floor(rateClicks/math.max(.001,now-rateAt)+.5)
       rateClicks=0;rateAt=now
       flowGuardTick()
-      -- V8.1.17.2: passive benchmark observation; failure cannot stop Farm.
+      -- V8.1.17.3: passive benchmark observation; failure cannot stop Farm.
       if type(st.onBenchmarkTick)=='function' then pcall(st.onBenchmarkTick,now) end
      end
      if now>=nextUi then
@@ -2184,8 +2184,8 @@ return st
 
 end
 local core=bootStableFarmEngine()
--- V8.1.17.2: compatibility metadata belongs to the UI, never the farm loop.
--- V7.9.4 farm decisions/click pacing unchanged; V8.1.17.2 adds protected observation hooks only.
+-- V8.1.17.3: compatibility metadata belongs to the UI, never the farm loop.
+-- V7.9.4 farm decisions/click pacing unchanged; V8.1.17.3 adds protected observation hooks only.
 core.lastActiveRate=0
 core.microStutters=0;core.stutterQuietUntil=0
 core.healthSamples={};core.healthLatestKB=0;core.healthPeakKB=0
@@ -2252,7 +2252,7 @@ if not iconUri then
  end
 end
 ICON_BASE64=nil
-_G.NKMPJ_RING_ATLAS_URI=nil -- never reuse a stale V8.1.17.2 cached ring.
+_G.NKMPJ_RING_ATLAS_URI=nil -- never reuse a stale V8.1.17.3 cached ring.
 -- Match the logo's proven local-asset API; if unavailable use a simple outline.
 do
  local loader=(type(getcustomasset)=='function' and getcustomasset) or
@@ -2442,7 +2442,7 @@ local haloGradient=make('UIGradient',logoStroke,{Color=ColorSequence.new({
  ColorSequenceKeypoint.new(.7,C.pearl),ColorSequenceKeypoint.new(1,C.gold)}),Rotation=0})
 local title=text(header,'NKMPJ HUB ✨',67,6,203,27,18,true,C.pearl)
 title.TextTruncate=Enum.TextTruncate.AtEnd
-local subtitle=text(header,'ENGINE ISOLATED  /  V8.1.17.2',68,31,199,14,10,true,C.gold)
+local subtitle=text(header,'ENGINE ISOLATED  /  V8.1.17.3',68,31,199,14,10,true,C.gold)
 local titleRail=frame(header,63,46,88,1,C.gold,0,1)
 titleRail.Visible=false -- subtitle spacing replaces the rail
 -- Controls share the same baseline, hit-box, radius and visual weight.
@@ -2704,7 +2704,7 @@ for _,b in ipairs(chromeButtons) do
 end
 local foot=frame(shell,14,385,W-28,1,C.edge,1,1)
 foot.Visible=false
--- QUICK HUD V8.1.17.2: 216x78, larger progress ring, unchanged lightning and farm.
+-- QUICK HUD V8.1.17.3: 216x78, larger progress ring, unchanged lightning and farm.
 -- Percent is live, original logo stays in the header; no duplicate game size.
 -- Farm engine and its update cadence are unchanged.
 local qw,qh=216,78
@@ -2731,7 +2731,7 @@ local qLogo=make('ImageLabel',qHeader,{Position=UDim2.fromOffset(2,1),
  Image=iconUri or '',ScaleType=Enum.ScaleType.Fit})
 if not iconUri then text(qHeader,'N',2,1,20,20,14,true,C.gold,Enum.TextXAlignment.Center) end
 -- Three independent actions: full console, mini orb, and true shutdown.
-local qTitle=text(qHeader,'NKMPJ 8.1.17.2 ⚡',25,1,115,20,10,true,C.pearl)
+local qTitle=text(qHeader,'NKMPJ 8.1.17.3 ⚡',25,1,115,20,10,true,C.pearl)
 qTitle.TextTruncate=Enum.TextTruncate.AtEnd
 local qFull=button(qHeader,'▣',144,2,19,18,Color3.fromRGB(34,41,48),C.gold,5)
 local qMin=button(qHeader,'−',166,2,19,18,Color3.fromRGB(34,41,48),C.pearl,5)
@@ -2797,12 +2797,12 @@ local qHint=text(quick,'รอข้อมูลเกม',62,55,84,13,8,false,C
 qHint.Visible=false -- Only show a source-error message; no repeated 'progress' row.
 local qState=text(quick,'พร้อม',62,55,84,14,9,true,C.mint)
 qState.TextTruncate=Enum.TextTruncate.AtEnd
--- V8.1.17.2: actual accumulated farm time, NOT the Benchmark countdown.
--- Tucked above the existing centered stop button; ring/lightning untouched.
-state.qFarmTime=text(quick,'⏱ 00:00',150,27,60,12,9,true,C.cyan,Enum.TextXAlignment.Center)
+-- V8.1.17.3: farm clock and primary toggle form ONE centered right-side group.
+-- No clock frame, no prefix icon, 2px gap; ring/lightning/percent untouched.
+state.qFarmTime=text(quick,'00:00',149,32,60,14,10,true,C.cyan,Enum.TextXAlignment.Center)
 state.qFarmTime.TextTruncate=Enum.TextTruncate.AtEnd
--- Primary action stays centered beside the larger ring (48px tall, y=27).
-local qToggle=button(quick,'▶ เริ่ม',155,40,54,21,C.gold,C.ink,6)
+-- Button is directly below the time: x=149, y=48, 60x21; vertical group centered.
+local qToggle=button(quick,'▶ เริ่ม',149,48,60,21,C.gold,C.ink,6)
 qToggle.TextSize=9
 jewelButton(qToggle,C.gold)
 -- This compatibility-only element stays invisible; hidden charts never repaint.
@@ -3262,7 +3262,7 @@ end))
 local lastProgress=-1
 local rateHeights={}
 local rateTweens={}
--- V8.1.17.2: Only the visible Quick HUD receives live size/percentage/progress.
+-- V8.1.17.3: Only the visible Quick HUD receives live size/percentage/progress.
 -- Full Console takes a one-off snapshot on entry or when explicitly refreshed.
  -- Quick HUD: no added game reads, click controls, or number tween.
 local function paintLiveSize(p,cap,allowFullSnapshot)
@@ -3388,7 +3388,7 @@ state.paintOperationalStatus=function()
   state.syncQuickMotion()
  end
 end
--- V8.1.17.2: live accumulated farm clock for the visible Full/Quick HUD.
+-- V8.1.17.3: live accumulated farm clock for the visible Full/Quick HUD.
 -- No new loop or game reads: called by the ALREADY EXISTING light UI pulse.
 -- Core activeStart is nil while Mouse Override pauses, so the counter freezes.
 state.farmClockLastWallSecond=-1
@@ -3420,7 +3420,7 @@ state.paintLiveFarmTime=function(force)
   local ss=seconds%60
   local compact=hh>0 and string.format('%d:%02d:%02d',hh,mm,ss)
    or string.format('%02d:%02d',math.floor(seconds/60),ss)
-  local shown='⏱ '..compact
+  local shown=compact
   if state.qFarmTime.Text~=shown then state.qFarmTime.Text=shown end
  end
 end
@@ -3648,7 +3648,7 @@ core.onLiveSize=function(currentSize,currentCap)
  if state.ux then state.ux.safe('quick-live-size',paintLiveSize,currentSize,currentCap)
  else pcall(paintLiveSize,currentSize,currentCap) end
 end
--- V8.1.17.2: ISOLATED, READ-ONLY, UI EVENT BRIDGE.
+-- V8.1.17.3: ISOLATED, READ-ONLY, UI EVENT BRIDGE.
 -- No callback from the farm coroutine; unexpected UI errors can never stop eating.
 state.liveBridge={sizeObject=nil,sizeConn=nil,capObject=nil,capConn=nil,extra={}}
 function state.liveBridge.publish()
@@ -3803,8 +3803,8 @@ local function installSmartCommandV75()
 -- Additive command deck. V7.4 farm, reset, map, logo, quick HUD and mini orb
 -- are preserved without changing their original engine functions.
 -- ============================================================================
-subtitle.Text='ENGINE ISOLATED  /  V8.1.17.2'
-lookStatus.Text='V8.1.17.2 • ENGINE RESTORE | LIVE SIZE'
+subtitle.Text='ENGINE ISOLATED  /  V8.1.17.3'
+lookStatus.Text='V8.1.17.3 • ENGINE RESTORE | LIVE SIZE'
 gui.Name='NKMPJ_HUB_V80'
 local HttpService=game:GetService('HttpService')
 -- Existing JSON format stays compatible with V7.5 backups.
@@ -3838,7 +3838,7 @@ commandDeck.Visible=false
 local deckTop=frame(commandDeck,0,0,364,28,Color3.fromRGB(34,31,24),9)
 local backButton=button(deckTop,'‹',4,3,29,22,C.raised,C.gold,7)
 backButton.TextSize=22
-local deckTitle=text(deckTop,'🧠 ศูนย์ควบคุมขั้นสูง  /  V8.1.17.2',41,1,290,25,12,true,C.pearl)
+local deckTitle=text(deckTop,'🧠 ศูนย์ควบคุมขั้นสูง  /  V8.1.17.3',41,1,290,25,12,true,C.pearl)
 local deckDot=frame(deckTop,343,11,7,7,C.mint,4)
 
 local deckNav=frame(commandDeck,0,32,364,29,Color3.fromRGB(21,22,18),9)
@@ -4244,7 +4244,7 @@ updateSmart=function(logOnly)
  if smartTab==2 then drawHistory() end
  smart.lastUISample=os.clock()
 end
-logEvent('Smart Command V8.1.17.2 • SAFE MAP GUARD พร้อมใช้งาน')
+logEvent('Smart Command V8.1.17.3 • SAFE MAP GUARD พร้อมใช้งาน')
  showSmartTab(1)
  updateSmart(false)
  state.onSnapshotSmart=function()updateSmart(false)end
@@ -4293,7 +4293,7 @@ core.onStatusChanged=function()
  -- Paint only visible status. Multi-task dispatcher coalesces repeated changes.
  if state.ux then state.ux.queueUI('status') end
 end
-print('NKMPJ HUB V8.1.17.2 | ENGINE RESTORE + COMPACT UI')
+print('NKMPJ HUB V8.1.17.3 | ENGINE RESTORE + COMPACT UI')
 
 end
 installSmartCommandV75()
@@ -4500,11 +4500,11 @@ local function installSignatureUltraV76()
  ultra.selectPage(state.page)
  startFX()
  refresh()
- print('NKMPJ HUB V8.1.17.2 ENGINE ISOLATED | Compact UX + live size + true exit')
+ print('NKMPJ HUB V8.1.17.3 ENGINE ISOLATED | Compact UX + live size + true exit')
 end
 installSignatureUltraV76()
 -- ============================================================================
--- V8.1.17.2 | SMART FARM BENCHMARK (OBSERVATION ONLY)
+-- V8.1.17.3 | SMART FARM BENCHMARK (OBSERVATION ONLY)
 -- One optional capture inside STATS; no independent high-frequency polling loop.
 -- Engine provides read-only observations from its existing 2-second CPS tick.
 -- Benchmark starts only on a user's click and never changes Farm/Reset/Map.
@@ -4692,7 +4692,7 @@ task.defer(function()
   end
  end
  b.paint=paint
- -- V8.1.17.2: light real-time clock for STATS, reusing the UI pulse.
+ -- V8.1.17.3: light real-time clock for STATS, reusing the UI pulse.
  -- Full Benchmark metrics/chart remain on the original sparse sample cadence.
  b.paintClock=function(now)
   if not state.alive or state.mode~='full' or state.page~=2 then return end
@@ -4718,7 +4718,7 @@ task.defer(function()
   local observedAvg=b.rateSeconds>0 and b.rateIntegral/b.rateSeconds or 0
   local paused=math.max(0,elapsed-active)
   local out={
-   'NKMPJ HUB V8.1.17.2 | SMART FARM BENCHMARK',
+   'NKMPJ HUB V8.1.17.3 | SMART FARM BENCHMARK',
    '==========================================',
    'ทดสอบเริ่ม: '..b.startDate,
    'สถานะ: '..reason,
@@ -4877,7 +4877,7 @@ task.defer(function()
  paint()
  end)
  if not ok then
-  warn('NKMPJ V8.1.17.2 benchmark panel failed: '..tostring(err))
+  warn('NKMPJ V8.1.17.3 benchmark panel failed: '..tostring(err))
   if state and state.ux and type(state.ux.notify)=='function' then
    pcall(state.ux.notify,'⚠️ Benchmark ไม่พร้อมใช้งาน • Farm เดิมยังทำงานได้')
   end
