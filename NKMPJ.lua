@@ -1,4 +1,7 @@
--- NKMPJ HUB V8.1.17.5 | SMART FARM BENCHMARK | ONE FILE
+-- NKMPJ HUB V8.1.18.0 | SMART ISLAND SIGNATURE | ONE FILE
+-- UI-only revision of V8.1.17.5; original core retained byte-for-byte.
+-- Quick Eco: FX OFF/SOFT/NORMAL; Ambient: FX ELITE. Full Console retains existing FX.
+-- Quick HUD: two visible controls; full console retains true X exit.
 -- Exact V7.9.4 farm function restored without internal modifications.
 -- V8 Premium Compact UI and Live Size operate from independent UI event listeners.
 -- If the farm stops again, the Quick HUD displays the game's actual stop reason.
@@ -68,7 +71,7 @@ if type(previousSession)=='table' then
  end
  previousSession.alive=false
 end
-local titanSession={alive=true,version='8.1.17.5',startedAt=os.clock()}
+local titanSession={alive=true,version='8.1.18.0',startedAt=os.clock()}
 _G[SESSION_KEY]=titanSession
 -- On re-execute, shut down the PREVIOUS UI/core BEFORE the new farm core binds keys.
 do
@@ -2442,7 +2445,7 @@ local haloGradient=make('UIGradient',logoStroke,{Color=ColorSequence.new({
  ColorSequenceKeypoint.new(.7,C.pearl),ColorSequenceKeypoint.new(1,C.gold)}),Rotation=0})
 local title=text(header,'NKMPJ HUB ✨',67,6,203,27,18,true,C.pearl)
 title.TextTruncate=Enum.TextTruncate.AtEnd
-local subtitle=text(header,'ENGINE ISOLATED  /  V8.1.17.5',68,31,199,14,10,true,C.gold)
+local subtitle=text(header,'ENGINE ISOLATED  /  V8.1.18.0',68,31,199,14,10,true,C.gold)
 local titleRail=frame(header,63,46,88,1,C.gold,0,1)
 titleRail.Visible=false -- subtitle spacing replaces the rail
 -- Controls share the same baseline, hit-box, radius and visual weight.
@@ -2704,43 +2707,36 @@ for _,b in ipairs(chromeButtons) do
 end
 local foot=frame(shell,14,385,W-28,1,C.edge,1,1)
 foot.Visible=false
--- QUICK HUD V8.1.17.5: 216x78, larger progress ring, unchanged lightning and farm.
--- Percent is live, original logo stays in the header; no duplicate game size.
--- Farm engine and its update cadence are unchanged.
-local qw,qh=216,78
-local qScaleFactor=1 -- exact pixels; avoid fuzzy fractional image sampling
+-- SMART ISLAND SIGNATURE: compact capsule with a dedicated data and control zone.
+local qw,qh=276,66
+local qScaleFactor=1
 local qFootW,qFootH=qw*qScaleFactor,qh*qScaleFactor
 local quick=frame(gui,x+W*scale-qFootW-72,y+56,qw,qh,
- Color3.fromRGB(10,14,23),15)
+ Color3.fromRGB(14,29,42),15)
+quick:FindFirstChildOfClass('UICorner').CornerRadius=UDim.new(.5,0)
 local quickScale=make('UIScale',quick,{Scale=qScaleFactor})
-state.quickFx={};state.quickFx.neonStroke=edge(quick,Color3.fromRGB(29,216,244),.19,1.25)
+state.quickFx={};state.quickFx.neonStroke=edge(quick,Color3.fromRGB(49,111,135),.22,1.25)
 state.quickFx.neonGradient=make('UIGradient',state.quickFx.neonStroke,{
  Color=ColorSequence.new({
-  ColorSequenceKeypoint.new(0,Color3.fromRGB(43,226,247)),
-  ColorSequenceKeypoint.new(.45,Color3.fromRGB(32,129,246)),
-  ColorSequenceKeypoint.new(.75,Color3.fromRGB(117,84,240)),
-  ColorSequenceKeypoint.new(1,Color3.fromRGB(43,226,247))}),Rotation=0})
+  ColorSequenceKeypoint.new(0,Color3.fromRGB(65,137,158)),
+  ColorSequenceKeypoint.new(.48,Color3.fromRGB(61,184,222)),
+  ColorSequenceKeypoint.new(.7,Color3.fromRGB(44,96,170)),
+  ColorSequenceKeypoint.new(1,Color3.fromRGB(65,137,158))}),Rotation=0})
 state.quickFx.neonTween=TS:Create(state.quickFx.neonGradient,
- TweenInfo.new(7,Enum.EasingStyle.Linear,Enum.EasingDirection.InOut,-1,false),
+ TweenInfo.new(9,Enum.EasingStyle.Linear,Enum.EasingDirection.InOut,-1,false),
  {Rotation=360})
-grad(quick,Color3.fromRGB(17,23,38),Color3.fromRGB(9,12,19),90)
-quick.Visible=false;quick.ClipsDescendants=true
-local qHeader=frame(quick,3,2,qw-6,22,Color3.fromRGB(23,29,39),7)
-local qLogo=make('ImageLabel',qHeader,{Position=UDim2.fromOffset(2,1),
- Size=UDim2.fromOffset(20,20),BackgroundTransparency=1,
- Image=iconUri or '',ScaleType=Enum.ScaleType.Fit})
-if not iconUri then text(qHeader,'N',2,1,20,20,14,true,C.gold,Enum.TextXAlignment.Center) end
--- Three independent actions: full console, mini orb, and true shutdown.
-local qTitle=text(qHeader,'NKMPJ 8.1.17.5 ⚡',25,1,115,20,10,true,C.pearl)
-qTitle.TextTruncate=Enum.TextTruncate.AtEnd
-local qFull=button(qHeader,'▣',144,2,19,18,Color3.fromRGB(34,41,48),C.gold,5)
-local qMin=button(qHeader,'−',166,2,19,18,Color3.fromRGB(34,41,48),C.pearl,5)
-local qExit=button(qHeader,'×',188,2,19,18,Color3.fromRGB(106,43,56),C.pearl,5)
--- Three aligned 19x18 header controls: open, minimize, true exit.
-qFull.TextSize=12;qMin.TextSize=13;qExit.TextSize=15
--- Subtle shared press/hover feedback; no continuous animation and no new loop.
-jewelButton(qFull,C.gold);jewelButton(qMin,C.cyan)
-jewelButton(qExit,Color3.fromRGB(218,95,112))
+grad(quick,Color3.fromRGB(24,50,65),Color3.fromRGB(10,24,36),0)
+quick.Visible=false;quick.ClipsDescendants=false
+-- The center zone is the drag handle; the two controls never overlap it.
+local qHeader=frame(quick,70,0,99,66,C.black,0,1)
+qHeader.Active=true
+local qLogo=make('ImageLabel',qHeader,{Position=UDim2.fromOffset(0,0),
+ Size=UDim2.fromOffset(1,1),BackgroundTransparency=1,Visible=false,
+ Image=iconUri or '',ScaleType=Enum.ScaleType.Fit}) -- compatibility only; no duplicate logo
+local qTitle=text(qHeader,'NKMPJ HUB',2,7,96,12,10,true,Color3.fromRGB(174,210,224))
+local qFull=button(quick,'↗',225,34,30,25,Color3.fromRGB(31,65,82),Color3.fromRGB(180,230,242),8)
+qFull.TextSize=17
+jewelButton(qFull,Color3.fromRGB(105,184,205))
 -- V7.6.2: luminous WHITE titles with one composited, engine-driven sweep.
 -- No frame-by-frame Lua loop; only the title visible in the current mode runs.
 local function buildWhiteSheen(lbl,duration)
@@ -2776,36 +2772,31 @@ end
 -- Smooth progress ring: one antialiased sprite atlas instead of 24 blocks.
 -- ImageRectOffset changes only when the percentage crosses a 1% boundary.
 -- Fallback: subtle full circle + large numeric percentage if no custom asset.
-local qRingBg=frame(quick,7,27,48,48,Color3.fromRGB(15,22,31),24)
-qRingBg.BackgroundTransparency=1 -- clean transparent ring: no dark disc under arc
+local qRingBg=frame(quick,5,3,60,60,Color3.fromRGB(14,28,42),24)
+perfectCircle(qRingBg)
+qRingBg.BackgroundTransparency=.08
 state.quickFx.ringStroke=edge(qRingBg,Color3.fromRGB(37,203,234),
  _G.NKMPJ_RING_ATLAS_URI and 1 or .65,1)
 local qRingArt=make('ImageLabel',qRingBg,{
  Name='SmoothProgressArc',Position=UDim2.fromOffset(0,0),
- Size=UDim2.fromOffset(48,48),BackgroundTransparency=1,
+ Size=UDim2.fromOffset(60,60),BackgroundTransparency=1,
  Image=_G.NKMPJ_RING_ATLAS_URI or '',ImageRectSize=Vector2.new(80,80),
  ImageRectOffset=Vector2.new(0,0),ImageTransparency=.02,
  ScaleType=Enum.ScaleType.Stretch})
 local qRingStep=-1
-local qRingIcon=text(qRingBg,'⚡',15,14,18,20,12,true,C.gold,Enum.TextXAlignment.Center)
-local qPercent=text(quick,'--%',62,29,83,24,20,true,C.gold,Enum.TextXAlignment.Left)
-setFont(qPercent,true)
-qPercent.TextScaled=false
-qPercent.TextWrapped=false
-qPercent.TextTruncate=Enum.TextTruncate.AtEnd
-local qHint=text(quick,'รอข้อมูลเกม',62,55,84,13,8,false,C.muted)
-qHint.Visible=false -- Only show a source-error message; no repeated 'progress' row.
-local qState=text(quick,'พร้อม',62,55,84,14,9,true,C.mint)
+local qRingIcon=text(qRingBg,'⚡',17,13,26,32,21,true,C.gold,Enum.TextXAlignment.Center)
+local qPercent=text(qHeader,'--%',2,19,96,25,23,true,Color3.fromRGB(255,207,123),Enum.TextXAlignment.Left)
+qPercent.TextScaled=false;qPercent.TextWrapped=false
+local qHint=text(qHeader,'รอข้อมูลเกม',2,45,96,13,9,false,C.muted)
+qHint.Visible=false
+local qState=text(qHeader,'● พร้อม',2,45,96,13,10,true,C.mint)
 qState.TextTruncate=Enum.TextTruncate.AtEnd
--- V8.1.17.5: farm clock and primary toggle form ONE centered right-side group.
--- Clock prefix restored; no frame. Two-pixel gap; ring artwork only updated.
-state.qFarmTime=text(quick,'⏱ 00:00',129,32,86,14,12,true,C.cyan,Enum.TextXAlignment.Center)
-state.qFarmTime.TextScaled=false -- keep clock readable, never shrink to 8px
-state.qFarmTime.TextWrapped=false
+-- Clock and two-button row share the same center axis (x=214).
+state.qFarmTime=text(quick,'00:00:00',166,7,96,23,19,true,Color3.fromRGB(171,237,249),Enum.TextXAlignment.Center)
+state.qFarmTime.TextScaled=false;state.qFarmTime.TextWrapped=false
 state.qFarmTime.TextTruncate=Enum.TextTruncate.AtEnd
--- Button is directly below the time: x=149, y=48, 60x21; vertical group centered.
-local qToggle=button(quick,'▶ เริ่ม',149,48,60,21,C.gold,C.ink,6)
-qToggle.TextSize=9
+local qToggle=button(quick,'▶',173,34,46,25,Color3.fromRGB(255,207,123),Color3.fromRGB(49,34,15),8)
+qToggle.TextSize=17
 jewelButton(qToggle,C.gold)
 -- This compatibility-only element stays invisible; hidden charts never repaint.
 local qProgressBg=frame(quick,0,0,1,1,C.black,0)
@@ -2829,7 +2820,7 @@ state.quickFx.running=false
 state.syncQuickMotion=function()
  local shouldRun=state.alive and state.mode=='quick' and core.on and
   not core.manualPaused and not (state.ux and state.ux.perfPaused) and
-  (state.fx or 0)>0
+  (state.fx or 0)==3 -- ELITE = Ambient; OFF/SOFT/NORMAL = Eco
  if state.quickFx.running==shouldRun then return end
  state.quickFx.running=shouldRun
  state.quickFx.neonTween:Cancel()
@@ -3087,15 +3078,15 @@ local function theme()
   if obj:IsA('UIStroke') then obj.Color=prime else obj.BackgroundColor3=prime end
  end
  eyebrow.TextColor3=prime;subtitle.TextColor3=prime
- percent.TextColor3=prime;qPercent.TextColor3=prime;timeLabel.TextColor3=prime
+ percent.TextColor3=prime;qPercent.TextColor3=Color3.fromRGB(255,207,123);timeLabel.TextColor3=prime
  qRingStep=-1
  qRingArt.ImageRectOffset=Vector2.new(0,0)
- qRingIcon.TextColor3=prime
- state.quickFx.neonStroke.Color=Color3.fromRGB(40,217,244)
+ qRingIcon.TextColor3=C.gold
+ state.quickFx.neonStroke.Color=Color3.fromRGB(49,111,135)
  lookStatus.TextColor3=prime;hint.TextColor3=C.muted
  progressGradient.Color=ColorSequence.new(pal.a,pal.b)
  startGrad.Color=ColorSequence.new(pal.a,pal.b)
- qToggle.BackgroundColor3=prime
+ qToggle.BackgroundColor3=Color3.fromRGB(255,207,123)
  start.BackgroundColor3=prime
  save.BackgroundColor3=prime
  rateLabel.TextColor3=prime
@@ -3202,10 +3193,6 @@ quickButton.Activated:Connect(function()
  local xx,yy=clampPos(shell.Position.X.Offset+W*shellScale.Scale-qFootW-54,shell.Position.Y.Offset+55,qFootW,qFootH)
  quick.Position=UDim2.fromOffset(xx,yy)
  setMode('quick')
-end)
-qMin.Activated:Connect(function()
- local xx,yy=clampPos(quick.Position.X.Offset+qFootW-MINI,quick.Position.Y.Offset,MINI,MINI)
- mini.Position=UDim2.fromOffset(xx,yy);setMode('mini')
 end)
 qFull.Activated:Connect(function()
  local xx,yy=clampPos(quick.Position.X.Offset,quick.Position.Y.Offset,W*shellScale.Scale,H*shellScale.Scale)
@@ -3381,10 +3368,11 @@ state.paintOperationalStatus=function()
   -- Red stop button never starts automation, unlike the gold toggle.
   emergency.BackgroundColor3=core.on and Color3.fromRGB(94,55,63) or Color3.fromRGB(59,51,51)
  elseif state.mode=='quick' then
-  local primary=core.on and '■ หยุด' or '▶ เริ่ม'
+  local primary=core.on and 'Ⅱ' or '▶'
   if qToggle.Text~=primary then qToggle.Text=primary end
   if not (state.ux and (state.ux.toastQuickUntil or 0)>os.clock()) then
-   if qState.Text~=small then qState.Text=small end
+   local displayed='● '..small
+    if qState.Text~=displayed then qState.Text=displayed end
    if qState.TextColor3~=color then qState.TextColor3=color end
   end
   state.syncQuickMotion()
@@ -3417,12 +3405,7 @@ state.paintLiveFarmTime=function(force)
    b.paintClock(now)
   end
  elseif state.mode=='quick' then
-  local hh=math.floor(seconds/3600)
-  local mm=math.floor(seconds/60)%60
-  local ss=seconds%60
-  local compact=hh>0 and string.format('%d:%02d:%02d',hh,mm,ss)
-   or string.format('%02d:%02d',math.floor(seconds/60),ss)
-  local shown='⏱ '..compact
+  local shown=clock(seconds)
   if state.qFarmTime.Text~=shown then state.qFarmTime.Text=shown end
  end
 end
@@ -3539,7 +3522,7 @@ do
   end)
  end
  report(start,'⚡ รับคำสั่งเริ่ม/หยุดแล้ว')
- report(qToggle,'⚡ รับคำสั่งจาก Quick HUD')
+ -- Quick toggle status remains visible; no temporary toast over it.
  report(emergency,'⛔ สั่งหยุดระบบแล้ว')
  report(testMap,'🗺️ กำลังตรวจคำขอข้ามแมพ')
  report(save,'💾 ตรวจสอบค่าขนาดเป้าหมายแล้ว')
@@ -3588,9 +3571,7 @@ titanSession.shutdown=function()
  if _G[SESSION_KEY]==titanSession then _G[SESSION_KEY]=nil end
 end
 closeButton.Activated:Connect(destroy)
--- A true Quick HUD close: completely stop + clean up all HUB overlays.
--- Unlike qFull (open main) and qMin (mini orb), X exits the script UI/core.
-qExit.Activated:Connect(destroy)
+-- Smart Island has only two controls. True X exit is retained in Full Console.
 entry.Text=core.manualCap and fmt(core.manualCap) or ''
 selectPage(1);theme();applyPersonalization();fxSelect();refresh();setMode('full')
 -- V7.9.11 HYBRID: event-driven size, everything else mouse-wake only.
@@ -3805,8 +3786,8 @@ local function installSmartCommandV75()
 -- Additive command deck. V7.4 farm, reset, map, logo, quick HUD and mini orb
 -- are preserved without changing their original engine functions.
 -- ============================================================================
-subtitle.Text='ENGINE ISOLATED  /  V8.1.17.5'
-lookStatus.Text='V8.1.17.5 • ENGINE RESTORE | LIVE SIZE'
+subtitle.Text='ENGINE ISOLATED  /  V8.1.18.0'
+lookStatus.Text='V8.1.18.0 • SMART ISLAND | LIVE SIZE'
 gui.Name='NKMPJ_HUB_V80'
 local HttpService=game:GetService('HttpService')
 -- Existing JSON format stays compatible with V7.5 backups.
@@ -3840,7 +3821,7 @@ commandDeck.Visible=false
 local deckTop=frame(commandDeck,0,0,364,28,Color3.fromRGB(34,31,24),9)
 local backButton=button(deckTop,'‹',4,3,29,22,C.raised,C.gold,7)
 backButton.TextSize=22
-local deckTitle=text(deckTop,'🧠 ศูนย์ควบคุมขั้นสูง  /  V8.1.17.5',41,1,290,25,12,true,C.pearl)
+local deckTitle=text(deckTop,'🧠 ศูนย์ควบคุมขั้นสูง  /  V8.1.18.0',41,1,290,25,12,true,C.pearl)
 local deckDot=frame(deckTop,343,11,7,7,C.mint,4)
 
 local deckNav=frame(commandDeck,0,32,364,29,Color3.fromRGB(21,22,18),9)
@@ -4347,7 +4328,7 @@ local function installSignatureUltraV76()
  local velocityLabel=text(stats,'เก็บข้อมูล...',263,135,96,21,10,true,C.muted,Enum.TextXAlignment.Right)
  rateText.Size=UDim2.fromOffset(260,21)
  local themeNote=text(look,'✦ PREMIUM THEME STUDIO',5,175,335,12,10,true,C.gold)
- hint.Text='โลโก้มีชีวิต • Liquid Champagne • กราฟข้อมูลจริง'
+ hint.Text='Quick: ECO (OFF/SOFT/NORMAL) • Ambient (ELITE)'
  miniHelp.Text='Full / Quick / Mini Orb  |  ไม่มีเสียง'
 
  local themeCards={}
@@ -4371,7 +4352,7 @@ local function installSignatureUltraV76()
   local bg=contrast[state.theme]
   if headerGradient then headerGradient.Color=cseq(bg:Lerp(pal.b,.19),Color3.fromRGB(15,18,17)) end
   if heroGradient then heroGradient.Color=cseq(bg:Lerp(pal.a,.15),Color3.fromRGB(23,23,21)) end
-  if quickGradient then quickGradient.Color=cseq(bg:Lerp(pal.a,.11),C.black) end
+  if quickGradient then quickGradient.Color=cseq(Color3.fromRGB(24,50,65),Color3.fromRGB(10,24,36)) end
   if reactorGradient then reactorGradient.Color=cseq(pal.a,pal.b) end
   tintBackground(gemOuter,bg:Lerp(pal.a,.18),C.deep)
   gemInner.BackgroundColor3=pal.b
@@ -4479,6 +4460,7 @@ local function installSignatureUltraV76()
   if state.fx==0 or (state.ux and state.ux.perfPaused) then return end
   local tm=state.motion==1 and .31 or (state.motion==3 and .15 or .23)
   if mode=='quick' then
+   if state.fx~=3 then quickScale.Scale=qScaleFactor;return end
    quickScale.Scale=qScaleFactor*.95
    tween(quickScale,{Scale=qScaleFactor},.18,Enum.EasingStyle.Quart)
   elseif mode=='full' then
