@@ -1,4 +1,5 @@
--- NKMPJ HUB V8.1.21.0 | ROYAL OBSIDIAN SIGNATURE | ONE FILE
+-- NKMPJ HUB V8.1.22.0 | PRESTIGE SIGNATURE | ONE FILE
+-- UI-only update: 148 x 96 Thai Quick HUD; existing controls and status source retained.
 -- UI-only revision of V8.1.17.5; original core retained byte-for-byte.
 -- Quick Eco: FX OFF/SOFT/NORMAL; Ambient: FX ELITE. Full Console retains existing FX.
 -- Micro HUD: ring / clock / toggle / true exit; ring opens full console.
@@ -71,7 +72,7 @@ if type(previousSession)=='table' then
  end
  previousSession.alive=false
 end
-local titanSession={alive=true,version='8.1.21.0',startedAt=os.clock()}
+local titanSession={alive=true,version='8.1.22.0',startedAt=os.clock()}
 _G[SESSION_KEY]=titanSession
 -- On re-execute, shut down the PREVIOUS UI/core BEFORE the new farm core binds keys.
 do
@@ -2445,7 +2446,7 @@ local haloGradient=make('UIGradient',logoStroke,{Color=ColorSequence.new({
  ColorSequenceKeypoint.new(.7,C.pearl),ColorSequenceKeypoint.new(1,C.gold)}),Rotation=0})
 local title=text(header,'NKMPJ HUB ✨',67,6,203,27,18,true,C.pearl)
 title.TextTruncate=Enum.TextTruncate.AtEnd
-local subtitle=text(header,'ENGINE ISOLATED  /  V8.1.21.0',68,31,199,14,10,true,C.gold)
+local subtitle=text(header,'ENGINE ISOLATED  /  V8.1.22.0',68,31,199,14,10,true,C.gold)
 local titleRail=frame(header,63,46,88,1,C.gold,0,1)
 titleRail.Visible=false -- subtitle spacing replaces the rail
 -- Controls share the same baseline, hit-box, radius and visual weight.
@@ -2707,63 +2708,65 @@ for _,b in ipairs(chromeButtons) do
 end
 local foot=frame(shell,14,385,W-28,1,C.edge,1,1)
 foot.Visible=false
--- TITAN MICRO ROYAL: 200 x 44, explicit console and exit buttons, one ambient tween.
-local qw,qh=206,44
+-- PRESTIGE SIGNATURE: compact two-row HUD, status below clock.
+local qw,qh=148,96
 local qScaleFactor=math.clamp(math.min((v.X-12)/qw,(v.Y-12)/qh),.78,1)
 local qFootW,qFootH=qw*qScaleFactor,qh*qScaleFactor
-local quick=frame(gui,math.max(3,v.X-qFootW-16),y+56,qw,qh,Color3.fromRGB(255,255,255),8)
-quick:FindFirstChildOfClass('UICorner').CornerRadius=UDim.new(0,5)
+local quick=frame(gui,math.max(3,v.X-qFootW-16),math.max(3,math.min(y+56,v.Y-qFootH-12)),qw,qh,Color3.fromRGB(255,255,255),12)
+quick:FindFirstChildOfClass('UICorner').CornerRadius=UDim.new(0,12)
 local quickScale=make('UIScale',quick,{Scale=qScaleFactor})
-state.quickFx={};state.quickFx.neonStroke=edge(quick,Color3.fromRGB(158,130,79),.22,1)
--- Baked chamfered metal body, with native rounded fallback if custom art is unavailable.
-do
- local loader=(type(getcustomasset)=='function' and getcustomasset) or (type(getsynasset)=='function' and getsynasset)
- if type(loader)=='function' and type(writefile)=='function' then
-  local ok,uri=pcall(function()
-   local name='NKMPJ_ROYAL_OBSIDIAN_SHELL_V8121.png'
-   writefile(name,decode64([=[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]=]))
-   return loader(name)
-  end)
-  if ok and type(uri)=='string' and #uri>0 then
-   make('ImageLabel',quick,{Name='ObsidianDiamondCut',Size=UDim2.fromScale(1,1),BackgroundTransparency=1,Image=uri,ScaleType=Enum.ScaleType.Stretch,ZIndex=1})
-   quick.BackgroundTransparency=1
-   state.quickFx.neonStroke.Transparency=1
-  end
- end
-end
-state.quickFx.sweep=frame(quick,11,1,184,1,Color3.fromRGB(255,255,255),0)
+state.quickFx={};state.quickFx.neonStroke=edge(quick,Color3.fromRGB(166,138,88),.12,1)
+state.quickFx.sweep=frame(quick,12,1,124,1,Color3.fromRGB(255,255,255),0)
 state.quickFx.sweep.ZIndex=2
 state.quickFx.neonGradient=make('UIGradient',state.quickFx.sweep,{
- Color=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(106,83,45)),
- ColorSequenceKeypoint.new(.40,Color3.fromRGB(161,126,70)),
- ColorSequenceKeypoint.new(.50,Color3.fromRGB(255,232,172)),
- ColorSequenceKeypoint.new(.60,Color3.fromRGB(161,126,70)),
- ColorSequenceKeypoint.new(1,Color3.fromRGB(106,83,45))}),Rotation=0})
+ Color=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(85,69,43)),
+ ColorSequenceKeypoint.new(.40,Color3.fromRGB(160,124,70)),
+ ColorSequenceKeypoint.new(.50,Color3.fromRGB(255,240,204)),
+ ColorSequenceKeypoint.new(.60,Color3.fromRGB(160,124,70)),
+ ColorSequenceKeypoint.new(1,Color3.fromRGB(85,69,43))}),Rotation=0})
 state.quickFx.neonTween=TS:Create(state.quickFx.neonGradient,
  TweenInfo.new(6,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut,-1,true),{Offset=Vector2.new(.55,0)})
-grad(quick,Color3.fromRGB(43,43,38),Color3.fromRGB(8,9,8),90)
+make('UIGradient',quick,{Color=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(58,56,47)),ColorSequenceKeypoint.new(.30,Color3.fromRGB(33,34,28)),ColorSequenceKeypoint.new(.72,Color3.fromRGB(13,15,14)),ColorSequenceKeypoint.new(1,Color3.fromRGB(25,24,18))}),Rotation=110})
 quick.Visible=false;quick.ClipsDescendants=false
--- Drag on the clock region. Compatibility labels stay under a hidden parent.
-local qHeader=frame(quick,46,0,75,44,C.black,0,1)
-qHeader.ZIndex=2
-qHeader.Active=true
+local qHeader=frame(quick,62,5,80,51,C.black,0,1)
+qHeader.ZIndex=2;qHeader.Active=true
 state.quickFx.hidden=frame(quick,0,0,1,1,C.black,0,1)
 state.quickFx.hidden.Visible=false
+state.quickFx.statusShort={['⏸ พักเมาส์']='พักเมาส์',['🔄 รีเซ็ต']='กำลังรีเซ็ต',['🗺️ เปลี่ยนแมพ']='เปลี่ยนแมพ',['⚠️ เมนูแมพเปิด']='เมนูแมพเปิด',['⚠️ กินไม่เพิ่ม']='ขนาดไม่เพิ่ม',['⚠️ FARM ERROR']='ผิดพลาด',['หยุด']='หยุดแล้ว'}
 local qLogo=make('ImageLabel',state.quickFx.hidden,{Size=UDim2.fromOffset(1,1),BackgroundTransparency=1,Visible=false,Image=iconUri or '',ScaleType=Enum.ScaleType.Fit})
 local qTitle=text(state.quickFx.hidden,'',0,0,1,1,10,true,C.muted)
-local qFull=button(quick,'',153,10,23,24,Color3.fromRGB(27,28,24),C.gold,5)
- qFull.AutoButtonColor=true;qFull.ZIndex=5
- edge(qFull,Color3.fromRGB(142,113,65),.3,1).ApplyStrokeMode=Enum.ApplyStrokeMode.Border
- -- Four-cell console glyph, distinct from the exit and toggle.
- for i=0,3 do
-  local cell=frame(qFull,6+(i%2)*7,6+math.floor(i/2)*7,4,4,Color3.fromRGB(217,193,143),1)
-  cell.ZIndex=6;cell.Active=false
- end
- grad(qFull,Color3.fromRGB(49,48,39),Color3.fromRGB(22,23,20),90)
-state.quickFx.exit=button(quick,'×',179,10,19,24,Color3.fromRGB(23,23,20),Color3.fromRGB(177,157,119),5)
- state.quickFx.exit.TextSize=15;state.quickFx.exit.ZIndex=5
- state.quickFx.exit.BackgroundTransparency=.6
- frame(quick,45,9,1,26,Color3.fromRGB(112,91,53),0,.50).ZIndex=2
+-- Shared static bevel, shadow, and one short feedback tween on activation.
+state.quickFx.decorate=function(b,caption,gold)
+ b.ZIndex=5;b.TextTransparency=1;b.AutoButtonColor=false
+ b:FindFirstChildOfClass('UICorner').CornerRadius=UDim.new(0,6)
+ local shadow=frame(quick,b.Position.X.Offset,b.Position.Y.Offset+2,42,26,Color3.fromRGB(5,6,5),6)
+ shadow.ZIndex=3
+ local stroke=edge(b,gold and Color3.fromRGB(201,172,118) or Color3.fromRGB(133,112,74),.12,1)
+ stroke.ApplyStrokeMode=Enum.ApplyStrokeMode.Border
+ local gradient=make('UIGradient',b,{Color=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(255,255,255)),ColorSequenceKeypoint.new(.35,Color3.fromRGB(196,190,177)),ColorSequenceKeypoint.new(.73,Color3.fromRGB(117,111,99)),ColorSequenceKeypoint.new(1,Color3.fromRGB(154,145,126))}),Rotation=90})
+ local rail=frame(b,5,2,32,1,Color3.fromRGB(255,231,186),0,.65);rail.ZIndex=6
+ local lbl=text(b,caption,1,15,40,10,8,false,Color3.fromRGB(247,224,186),Enum.TextXAlignment.Center)
+ lbl.ZIndex=7;lbl.Active=false;lbl.TextTruncate=Enum.TextTruncate.None
+ local scaler=make('UIScale',b,{Scale=1})
+ b.Activated:Connect(function()
+  scaler.Scale=.95
+  TS:Create(scaler,TweenInfo.new(.14,Enum.EasingStyle.Quad),{Scale=1}):Play()
+ end)
+ return stroke,lbl
+end
+local qFull=button(quick,'',53,63,42,26,Color3.fromRGB(73,70,59),C.gold,6)
+state.quickFx.decorate(qFull,'เมนูหลัก',false)
+for i=0,3 do
+ local cell=frame(qFull,16+(i%2)*6,4+math.floor(i/2)*6,4,4,Color3.fromRGB(234,211,169),1)
+ cell.ZIndex=7;cell.Active=false
+end
+state.quickFx.exit=button(quick,'',98,63,42,26,Color3.fromRGB(73,70,59),C.gold,6)
+state.quickFx.decorate(state.quickFx.exit,'ออก',false)
+do
+ local symbol=text(state.quickFx.exit,'⏻',0,0,42,17,16,false,Color3.fromRGB(235,211,170),Enum.TextXAlignment.Center)
+ symbol.ZIndex=7;symbol.Active=false
+end
+frame(quick,8,58,132,1,Color3.fromRGB(155,131,85),0,.45).ZIndex=2
 -- V7.6.2: luminous WHITE titles with one composited, engine-driven sweep.
 -- No frame-by-frame Lua loop; only the title visible in the current mode runs.
 local function buildWhiteSheen(lbl,duration)
@@ -2799,35 +2802,37 @@ end
 -- Smooth progress ring: one antialiased sprite atlas instead of 24 blocks.
 -- ImageRectOffset changes only when the percentage crosses a 1% boundary.
 -- Fallback: subtle full circle + large numeric percentage if no custom asset.
-local qRingBg=frame(quick,4,4,36,36,Color3.fromRGB(10,12,11),18)
+local qRingBg=frame(quick,7,5,51,51,Color3.fromRGB(10,12,11),25)
 qRingBg.ZIndex=2
 perfectCircle(qRingBg)
 state.quickFx.ringStroke=edge(qRingBg,Color3.fromRGB(126,99,54),.30,1)
 local qRingArt=make('ImageLabel',qRingBg,{
- Name='SmoothProgressArc',Position=UDim2.fromOffset(0,0),Size=UDim2.fromOffset(36,36),
+ Name='SmoothProgressArc',Position=UDim2.fromOffset(0,0),Size=UDim2.fromOffset(51,51),
  BackgroundTransparency=1,Image=_G.NKMPJ_RING_ATLAS_URI or '',ImageRectSize=Vector2.new(80,80),
  ImageRectOffset=Vector2.new(0,0),ImageTransparency=.02,ScaleType=Enum.ScaleType.Stretch,ZIndex=3})
 local qRingStep=-1
 local qRingIcon=text(state.quickFx.hidden,'',0,0,1,1,10,true,C.gold)
-local qPercent=text(qRingBg,'--%',4,10,28,16,8,false,Color3.fromRGB(243,217,162),Enum.TextXAlignment.Center)
+local qPercent=text(qRingBg,'--%',6,17,39,17,8,false,Color3.fromRGB(243,217,162),Enum.TextXAlignment.Center)
 qPercent.TextScaled=false;qPercent.TextWrapped=false;qPercent.ZIndex=4
 qPercent.TextTruncate=Enum.TextTruncate.None
-local qHint=text(state.quickFx.hidden,'',0,0,1,1,9,false,C.muted)
-local qState=text(state.quickFx.hidden,'',0,0,1,1,9,true,C.mint)
-state.qFarmTime=text(qHeader,'00:00:00',2,8,72,28,13,true,Color3.fromRGB(244,226,189),Enum.TextXAlignment.Center)
+local qHint=text(qHeader,'',0,38,80,12,8,false,Color3.fromRGB(232,191,121),Enum.TextXAlignment.Center)
+qHint.ZIndex=4;qHint.Visible=false;qHint.Active=false
+local qState=text(qHeader,'พร้อมเริ่ม',0,38,80,12,8,false,C.mint,Enum.TextXAlignment.Center)
+qState.ZIndex=4;qState.Active=false
+state.qFarmTime=text(qHeader,'00:00:00',0,13,80,22,14,true,Color3.fromRGB(250,234,203),Enum.TextXAlignment.Center)
 state.qFarmTime.ZIndex=3
+state.qFarmTime.TextScaled=false;state.qFarmTime.TextWrapped=false;state.qFarmTime.Active=false
 do
- local line=frame(qHeader,12,33,51,1,Color3.fromRGB(171,141,86),0,.5)
+ local clockIcon=text(qHeader,'◷',0,0,80,12,12,false,Color3.fromRGB(190,161,110),Enum.TextXAlignment.Center)
+ clockIcon.ZIndex=3;clockIcon.Active=false
+ local line=frame(qHeader,7,35,66,1,Color3.fromRGB(171,141,86),0,.4)
  line.ZIndex=3
  make('UIGradient',line,{Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(.5,0),NumberSequenceKeypoint.new(1,1)})})
 end
- state.qFarmTime.Font=Enum.Font.GothamBold
-state.qFarmTime.TextScaled=false;state.qFarmTime.TextWrapped=false;state.qFarmTime.Active=false
-local qToggle=button(quick,'▶',124,10,24,24,Color3.fromRGB(89,70,36),Color3.fromRGB(255,231,175),5)
- qToggle.TextSize=13;qToggle.ZIndex=5
- grad(qToggle,Color3.fromRGB(255,255,255),Color3.fromRGB(173,161,136),90)
- state.quickFx.toggleStroke=edge(qToggle,Color3.fromRGB(180,143,77),.2,1)
- state.quickFx.toggleStroke.ApplyStrokeMode=Enum.ApplyStrokeMode.Border
+local qToggle=button(quick,'▶',8,63,42,26,Color3.fromRGB(178,148,92),Color3.fromRGB(255,241,207),6)
+state.quickFx.toggleStroke,state.quickFx.toggleLabel=state.quickFx.decorate(qToggle,'เริ่ม',true)
+state.quickFx.toggleGlyph=text(qToggle,'▶',0,0,42,17,14,true,Color3.fromRGB(255,241,207),Enum.TextXAlignment.Center)
+state.quickFx.toggleGlyph.ZIndex=7;state.quickFx.toggleGlyph.Active=false
 local qProgressBg=frame(quick,0,0,1,1,C.black,0);qProgressBg.Visible=false
 local qProgress=frame(qProgressBg,0,0,1,1,C.gold,0)
 local qProgressTween=nil
@@ -2837,7 +2842,7 @@ state.quickFx.ticks={}
 if not _G.NKMPJ_RING_ATLAS_URI then
  for i=1,24 do
   local a=(i-1)*math.pi/12
-  local tick=frame(qRingBg,17+math.sin(a)*14,17-math.cos(a)*14,2,3,Color3.fromRGB(68,54,32),1)
+  local tick=frame(qRingBg,24+math.sin(a)*20,24-math.cos(a)*20,2,3,Color3.fromRGB(68,54,32),1)
   tick.Rotation=(i-1)*15;tick.ZIndex=3
   state.quickFx.ticks[i]=tick
  end
@@ -3113,11 +3118,11 @@ local function theme()
  state.quickFx.phase=nil
  qRingArt.ImageRectOffset=Vector2.new(0,0)
  qRingIcon.TextColor3=C.gold
- state.quickFx.neonStroke.Color=Color3.fromRGB(255,255,255)
+ state.quickFx.neonStroke.Color=Color3.fromRGB(166,138,88)
  lookStatus.TextColor3=prime;hint.TextColor3=C.muted
  progressGradient.Color=ColorSequence.new(pal.a,pal.b)
  startGrad.Color=ColorSequence.new(pal.a,pal.b)
- qToggle.BackgroundColor3=Color3.fromRGB(89,70,36)
+ qToggle.BackgroundColor3=Color3.fromRGB(178,148,92)
  start.BackgroundColor3=prime
  save.BackgroundColor3=prime
  rateLabel.TextColor3=prime
@@ -3405,6 +3410,9 @@ state.paintOperationalStatus=function()
  elseif state.mode=='quick' then
   local primary=core.on and 'Ⅱ' or '▶'
   if qToggle.Text~=primary then qToggle.Text=primary end
+   if state.quickFx.toggleGlyph.Text~=primary then state.quickFx.toggleGlyph.Text=primary end
+   local caption=core.on and 'หยุด' or 'เริ่ม'
+   if state.quickFx.toggleLabel.Text~=caption then state.quickFx.toggleLabel.Text=caption end
   local running=core.on and not core.manualPaused
   local amber=core.on and (core.manualPaused or core.resetPending or core.mapBusy or core.menuPauseActive)
   local key=amber and 'busy' or (running and 'running' or 'idle')
@@ -3414,12 +3422,12 @@ state.paintOperationalStatus=function()
    state.quickFx.ringStroke.Color=tint
    qPercent.TextColor3=amber and Color3.fromRGB(231,194,131) or Color3.fromRGB(243,217,162)
    state.qFarmTime.TextColor3=amber and Color3.fromRGB(218,181,119) or (running and Color3.fromRGB(244,226,189) or Color3.fromRGB(207,187,147))
-   qToggle.BackgroundColor3=core.on and Color3.fromRGB(59,46,28) or Color3.fromRGB(89,70,36)
+   qToggle.BackgroundColor3=core.on and Color3.fromRGB(178,148,92) or Color3.fromRGB(149,120,74)
    qToggle.TextColor3=core.on and Color3.fromRGB(255,213,139) or Color3.fromRGB(255,231,175)
    state.quickFx.toggleStroke.Color=core.on and Color3.fromRGB(143,108,56) or Color3.fromRGB(180,143,77)
   end
   if not (state.ux and (state.ux.toastQuickUntil or 0)>os.clock()) then
-   local displayed='● '..small
+   local displayed='● '..(state.quickFx.statusShort[small] or small)
     if qState.Text~=displayed then qState.Text=displayed end
    if qState.TextColor3~=color then qState.TextColor3=color end
   end
@@ -3835,8 +3843,8 @@ local function installSmartCommandV75()
 -- Additive command deck. V7.4 farm, reset, map, logo, quick HUD and mini orb
 -- are preserved without changing their original engine functions.
 -- ============================================================================
-subtitle.Text='ENGINE ISOLATED  /  V8.1.21.0'
-lookStatus.Text='V8.1.21.0 • TITAN MICRO | LIVE SIZE'
+subtitle.Text='ENGINE ISOLATED  /  V8.1.22.0'
+lookStatus.Text='V8.1.22.0 • PRESTIGE | LIVE SIZE'
 gui.Name='NKMPJ_HUB_V80'
 local HttpService=game:GetService('HttpService')
 -- Existing JSON format stays compatible with V7.5 backups.
@@ -3870,7 +3878,7 @@ commandDeck.Visible=false
 local deckTop=frame(commandDeck,0,0,364,28,Color3.fromRGB(34,31,24),9)
 local backButton=button(deckTop,'‹',4,3,29,22,C.raised,C.gold,7)
 backButton.TextSize=22
-local deckTitle=text(deckTop,'🧠 ศูนย์ควบคุมขั้นสูง  /  V8.1.21.0',41,1,290,25,12,true,C.pearl)
+local deckTitle=text(deckTop,'🧠 ศูนย์ควบคุมขั้นสูง  /  V8.1.22.0',41,1,290,25,12,true,C.pearl)
 local deckDot=frame(deckTop,343,11,7,7,C.mint,4)
 
 local deckNav=frame(commandDeck,0,32,364,29,Color3.fromRGB(21,22,18),9)
@@ -4401,7 +4409,7 @@ local function installSignatureUltraV76()
   local bg=contrast[state.theme]
   if headerGradient then headerGradient.Color=cseq(bg:Lerp(pal.b,.19),Color3.fromRGB(15,18,17)) end
   if heroGradient then heroGradient.Color=cseq(bg:Lerp(pal.a,.15),Color3.fromRGB(23,23,21)) end
-  if quickGradient then quickGradient.Color=cseq(Color3.fromRGB(49,40,28),Color3.fromRGB(13,14,12)) end
+  if quickGradient then quickGradient.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(58,56,47)),ColorSequenceKeypoint.new(.30,Color3.fromRGB(33,34,28)),ColorSequenceKeypoint.new(.72,Color3.fromRGB(13,15,14)),ColorSequenceKeypoint.new(1,Color3.fromRGB(25,24,18))}) end
   if reactorGradient then reactorGradient.Color=cseq(pal.a,pal.b) end
   tintBackground(gemOuter,bg:Lerp(pal.a,.18),C.deep)
   gemInner.BackgroundColor3=pal.b
