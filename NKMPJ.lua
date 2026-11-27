@@ -1,5 +1,5 @@
--- NKMPJ HUB V8.1.23.0 | ROYAL BLACK GOLD FINAL SIGNATURE | ONE FILE
--- UI-only update: 158 x 104 Thai Quick HUD; existing controls and status source retained.
+-- NKMPJ HUB V8.1.24.0 | ROYAL BLACK GOLD DUAL CHAMBER | ONE FILE
+-- UI-only update: 184 x 122 Thai Quick HUD; existing controls and status source retained.
 -- UI-only revision of V8.1.17.5; original core retained byte-for-byte.
 -- Quick Eco: FX OFF/SOFT; Ambient: FX NORMAL/ELITE. Full Console retains existing FX.
 -- Quick HUD: ring / clock / status / toggle / main menu / exit.
@@ -2446,7 +2446,7 @@ local haloGradient=make('UIGradient',logoStroke,{Color=ColorSequence.new({
  ColorSequenceKeypoint.new(.7,C.pearl),ColorSequenceKeypoint.new(1,C.gold)}),Rotation=0})
 local title=text(header,'NKMPJ HUB ✨',67,6,203,27,18,true,C.pearl)
 title.TextTruncate=Enum.TextTruncate.AtEnd
-local subtitle=text(header,'ENGINE ISOLATED  /  V8.1.23.0',68,31,199,14,10,true,C.gold)
+local subtitle=text(header,'ENGINE ISOLATED  /  V8.1.24.0',68,31,199,14,10,true,C.gold)
 local titleRail=frame(header,63,46,88,1,C.gold,0,1)
 titleRail.Visible=false -- subtitle spacing replaces the rail
 -- Controls share the same baseline, hit-box, radius and visual weight.
@@ -2709,7 +2709,7 @@ end
 local foot=frame(shell,14,385,W-28,1,C.edge,1,1)
 foot.Visible=false
 -- PRESTIGE SIGNATURE: compact two-row HUD, status below clock.
-local qw,qh=158,104
+local qw,qh=184,122
 local qScaleFactor=math.clamp(math.min((v.X-12)/qw,(v.Y-12)/qh),.78,1)
 local qFootW,qFootH=qw*qScaleFactor,qh*qScaleFactor
 local quick=frame(gui,math.max(3,v.X-qFootW-16),math.max(3,math.min(y+56,v.Y-qFootH-12)),qw,qh,Color3.fromRGB(255,255,255),12)
@@ -2728,7 +2728,20 @@ state.quickFx.neonTween=TS:Create(state.quickFx.neonGradient,
  TweenInfo.new(7,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut,-1,true),{Offset=Vector2.new(.55,0)})
 make('UIGradient',quick,{Color=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(14,13,10)),ColorSequenceKeypoint.new(.28,Color3.fromRGB(9,9,8)),ColorSequenceKeypoint.new(.72,Color3.fromRGB(5,5,5)),ColorSequenceKeypoint.new(1,Color3.fromRGB(7,7,6))}),Rotation=110})
 quick.Visible=false;quick.ClipsDescendants=false
-local qHeader=frame(quick,67,10,81,46,C.black,0,1)
+-- Dual Chamber: visual layers only; no additional update loop.
+do
+ local deck=frame(quick,8,77,168,37,Color3.fromRGB(10,8,6),8)
+ deck.ZIndex=2;deck.Active=false
+ local divider=frame(quick,10,72,164,1,Color3.fromRGB(255,255,255),0)
+ divider.ZIndex=3;divider.Active=false
+ make('UIGradient',divider,{Color=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(85,60,28)),ColorSequenceKeypoint.new(.5,Color3.fromRGB(238,197,124)),ColorSequenceKeypoint.new(1,Color3.fromRGB(85,60,28))}),Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.8),NumberSequenceKeypoint.new(.5,0),NumberSequenceKeypoint.new(1,.8)})})
+ local jewel=frame(quick,90,71,4,4,Color3.fromRGB(231,190,116),0)
+ jewel.Rotation=45;jewel.ZIndex=4;jewel.Active=false
+ local split=frame(quick,75,17,1,41,Color3.fromRGB(159,120,61),0)
+ split.ZIndex=2;split.Active=false
+ make('UIGradient',split,{Rotation=90,Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(.5,.46),NumberSequenceKeypoint.new(1,1)})})
+end
+local qHeader=frame(quick,82,9,92,57,C.black,0,1)
 qHeader.ZIndex=2;qHeader.Active=true
 state.quickFx.hidden=frame(quick,0,0,1,1,C.black,0,1)
 state.quickFx.hidden.Visible=false
@@ -2739,14 +2752,15 @@ local qTitle=text(state.quickFx.hidden,'',0,0,1,1,10,true,C.muted)
 state.quickFx.decorate=function(b,caption,gold)
  b.ZIndex=5;b.TextTransparency=1;b.AutoButtonColor=false
  b:FindFirstChildOfClass('UICorner').CornerRadius=UDim.new(0,6)
- local shadow=frame(quick,b.Position.X.Offset,b.Position.Y.Offset+2,40,27,Color3.fromRGB(5,6,7),6)
+ local shadow=frame(quick,b.Position.X.Offset,b.Position.Y.Offset+2,48,33,Color3.fromRGB(5,5,5),6)
  shadow.ZIndex=3
  local stroke=edge(b,gold and Color3.fromRGB(194,154,89) or Color3.fromRGB(135,106,58),.12,1)
  stroke.ApplyStrokeMode=Enum.ApplyStrokeMode.Border
  b.BackgroundColor3=Color3.fromRGB(255,255,255)
   make('UIGradient',b,{Color=gold and ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(141,107,54)),ColorSequenceKeypoint.new(.42,Color3.fromRGB(90,66,33)),ColorSequenceKeypoint.new(1,Color3.fromRGB(43,32,18))}) or ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(46,37,24)),ColorSequenceKeypoint.new(.55,Color3.fromRGB(21,18,13)),ColorSequenceKeypoint.new(1,Color3.fromRGB(12,11,9))}),Rotation=90})
- local lbl=text(b,caption,0,15,40,11,8,false,Color3.fromRGB(241,208,149),Enum.TextXAlignment.Center)
- lbl.ZIndex=7;lbl.Active=false;lbl.TextTruncate=Enum.TextTruncate.None
+ local lbl=text(b,caption,3,17,42,14,10,false,Color3.fromRGB(247,215,154),Enum.TextXAlignment.Center)
+ lbl.ZIndex=7;lbl.Active=false;lbl.TextTruncate=Enum.TextTruncate.None;lbl.TextScaled=true
+ make('UITextSizeConstraint',lbl,{MinTextSize=8,MaxTextSize=10})
  local scaler=make('UIScale',b,{Scale=1})
  b.Activated:Connect(function()
   scaler.Scale=.95
@@ -2754,18 +2768,18 @@ state.quickFx.decorate=function(b,caption,gold)
  end)
  return stroke,lbl
 end
-local qFull=button(quick,'',59,68,40,27,Color3.fromRGB(255,255,255),C.gold,6)
+local qFull=button(quick,'',68,80,48,33,Color3.fromRGB(255,255,255),C.gold,6)
 state.quickFx.decorate(qFull,'เมนูหลัก',false)
 for i=0,3 do
- local cell=frame(qFull,14+(i%2)*6,3+math.floor(i/2)*6,4,4,Color3.fromRGB(234,211,169),1)
+ local cell=frame(qFull,18+(i%2)*7,3+math.floor(i/2)*7,5,5,Color3.fromRGB(234,211,169),1)
  cell.ZIndex=7;cell.Active=false
 end
-state.quickFx.exit=button(quick,'',108,68,40,27,Color3.fromRGB(255,255,255),C.gold,6)
+state.quickFx.exit=button(quick,'',126,80,48,33,Color3.fromRGB(255,255,255),C.gold,6)
 state.quickFx.decorate(state.quickFx.exit,'ออก',false)
 do
  -- X built from native geometry: no unsupported font glyph.
  for _,angle in ipairs({45,-45}) do
-  local arm=frame(state.quickFx.exit,19,3,2,12,Color3.fromRGB(244,199,115),1)
+  local arm=frame(state.quickFx.exit,23,3,2,13,Color3.fromRGB(244,199,115),1)
   arm.Rotation=angle;arm.ZIndex=7;arm.Active=false
  end
 end
@@ -2804,31 +2818,31 @@ end
 -- Smooth progress ring: one antialiased sprite atlas instead of 24 blocks.
 -- ImageRectOffset changes only when the percentage crosses a 1% boundary.
 -- Fallback: subtle full circle + large numeric percentage if no custom asset.
-local qRingBg=frame(quick,10,8,53,53,Color3.fromRGB(6,6,6),28)
+local qRingBg=frame(quick,11,8,56,56,Color3.fromRGB(6,6,6),28)
 qRingBg.ZIndex=2
 perfectCircle(qRingBg)
 state.quickFx.ringStroke=edge(qRingBg,Color3.fromRGB(126,99,54),.30,1)
 local qRingArt=make('ImageLabel',qRingBg,{
- Name='SmoothProgressArc',Position=UDim2.fromOffset(0,0),Size=UDim2.fromOffset(53,53),
+ Name='SmoothProgressArc',Position=UDim2.fromOffset(0,0),Size=UDim2.fromOffset(56,56),
  BackgroundTransparency=1,Image=_G.NKMPJ_RING_ATLAS_URI or '',ImageRectSize=Vector2.new(80,80),
  ImageRectOffset=Vector2.new(0,0),ImageTransparency=.02,ScaleType=Enum.ScaleType.Stretch,ZIndex=3})
 local qRingStep=-1
 state.quickFx.completionStroke=edge(qRingBg,Color3.fromRGB(255,222,155),1,1)
 state.quickFx.completionTween=TS:Create(state.quickFx.completionStroke,TweenInfo.new(.48,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut,0,true),{Transparency=.08})
 local qRingIcon=text(state.quickFx.hidden,'',0,0,1,1,10,true,C.gold)
-local qPercent=text(qRingBg,'--%',5,18,43,17,8,false,Color3.fromRGB(242,212,156),Enum.TextXAlignment.Center)
+local qPercent=text(qRingBg,'--%',7,19,42,18,9,false,Color3.fromRGB(242,212,156),Enum.TextXAlignment.Center)
 qPercent.TextScaled=false;qPercent.TextWrapped=false;qPercent.ZIndex=4
 qPercent.TextTruncate=Enum.TextTruncate.None
-local qHint=text(qHeader,'',0,30,81,13,8,false,Color3.fromRGB(232,191,121),Enum.TextXAlignment.Center)
+local qHint=text(qHeader,'',0,33,92,18,10,false,Color3.fromRGB(232,191,121),Enum.TextXAlignment.Center)
 qHint.ZIndex=4;qHint.Visible=false;qHint.Active=false
-local qState=text(qHeader,'พร้อมเริ่ม',0,30,81,13,8,false,C.mint,Enum.TextXAlignment.Center)
+local qState=text(qHeader,'พร้อมเริ่ม',0,33,92,18,10,false,C.mint,Enum.TextXAlignment.Center)
  qState.ZIndex=4;qState.Active=false;qState.TextTruncate=Enum.TextTruncate.AtEnd
-state.qFarmTime=text(qHeader,'00:00:00',0,6,81,20,14,false,Color3.fromRGB(241,208,149),Enum.TextXAlignment.Center)
+state.qFarmTime=text(qHeader,'00:00:00',0,7,92,23,16,false,Color3.fromRGB(241,208,149),Enum.TextXAlignment.Center)
 state.qFarmTime.ZIndex=3
 state.qFarmTime.TextScaled=false;state.qFarmTime.TextWrapped=false;state.qFarmTime.Active=false
-local qToggle=button(quick,'▶',10,68,40,27,Color3.fromRGB(255,255,255),Color3.fromRGB(255,241,207),6)
+local qToggle=button(quick,'▶',10,80,48,33,Color3.fromRGB(255,255,255),Color3.fromRGB(255,241,207),6)
 state.quickFx.toggleStroke,state.quickFx.toggleLabel=state.quickFx.decorate(qToggle,'เริ่ม',true)
-state.quickFx.toggleGlyph=text(qToggle,'▶',0,0,40,15,13,true,Color3.fromRGB(255,220,150),Enum.TextXAlignment.Center)
+state.quickFx.toggleGlyph=text(qToggle,'▶',0,1,48,16,14,true,Color3.fromRGB(255,220,150),Enum.TextXAlignment.Center)
 state.quickFx.toggleGlyph.ZIndex=7;state.quickFx.toggleGlyph.Active=false
 local qProgressBg=frame(quick,0,0,1,1,C.black,0);qProgressBg.Visible=false
 local qProgress=frame(qProgressBg,0,0,1,1,C.gold,0)
@@ -2839,7 +2853,7 @@ state.quickFx.ticks={}
 if not _G.NKMPJ_RING_ATLAS_URI then
  for i=1,24 do
   local a=(i-1)*math.pi/12
-  local tick=frame(qRingBg,25.5+math.sin(a)*21,25.5-math.cos(a)*21,2,3,Color3.fromRGB(68,54,32),1)
+  local tick=frame(qRingBg,27+math.sin(a)*23,26.5-math.cos(a)*23,2,3,Color3.fromRGB(68,54,32),1)
   tick.Rotation=(i-1)*15;tick.ZIndex=3
   state.quickFx.ticks[i]=tick
  end
@@ -3345,7 +3359,7 @@ local function paintLiveSize(p,cap,allowFullSnapshot)
  elseif state.mode=='quick' then
   if qPercent.Text~=percentText then
    qPercent.Text=percentText
-   qPercent.TextSize=#percentText>=6 and 7 or 8
+   qPercent.TextSize=#percentText>=6 and 8 or 9
   end
   if qHint.Visible then qHint.Visible=false end
   if not qState.Visible then qState.Visible=true end
@@ -3849,8 +3863,8 @@ local function installSmartCommandV75()
 -- Additive command deck. V7.4 farm, reset, map, logo, quick HUD and mini orb
 -- are preserved without changing their original engine functions.
 -- ============================================================================
-subtitle.Text='ENGINE ISOLATED  /  V8.1.23.0'
-lookStatus.Text='V8.1.23.0 • FINAL SIGNATURE | LIVE SIZE'
+subtitle.Text='ENGINE ISOLATED  /  V8.1.24.0'
+lookStatus.Text='V8.1.24.0 • DUAL CHAMBER | LIVE SIZE'
 gui.Name='NKMPJ_HUB_V80'
 local HttpService=game:GetService('HttpService')
 -- Existing JSON format stays compatible with V7.5 backups.
@@ -3884,7 +3898,7 @@ commandDeck.Visible=false
 local deckTop=frame(commandDeck,0,0,364,28,Color3.fromRGB(34,31,24),9)
 local backButton=button(deckTop,'‹',4,3,29,22,C.raised,C.gold,7)
 backButton.TextSize=22
-local deckTitle=text(deckTop,'🧠 ศูนย์ควบคุมขั้นสูง  /  V8.1.23.0',41,1,290,25,12,true,C.pearl)
+local deckTitle=text(deckTop,'🧠 ศูนย์ควบคุมขั้นสูง  /  V8.1.24.0',41,1,290,25,12,true,C.pearl)
 local deckDot=frame(deckTop,343,11,7,7,C.mint,4)
 
 local deckNav=frame(commandDeck,0,32,364,29,Color3.fromRGB(21,22,18),9)
