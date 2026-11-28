@@ -1,4 +1,4 @@
--- NKMPJ HUB V8.1.25.2 | ROYAL SPECTRUM | TYPOGRAPHY POLISH | ONE FILE
+-- NKMPJ HUB V8.1.26.0 | ROYAL SPECTRUM | CINEMATIC MORPH | ONE FILE
 -- UI-only update: 184 x 122 Thai Quick HUD; existing controls and status source retained.
 -- UI-only revision of V8.1.17.5; original core retained byte-for-byte.
 -- Quick Eco: FX OFF/SOFT; Ambient: FX NORMAL/ELITE. Full Console retains existing FX.
@@ -2446,7 +2446,7 @@ local haloGradient=make('UIGradient',logoStroke,{Color=ColorSequence.new({
  ColorSequenceKeypoint.new(.7,C.pearl),ColorSequenceKeypoint.new(1,C.gold)}),Rotation=0})
 local title=text(header,'NKMPJ HUB ✨',67,6,203,27,18,true,C.pearl)
 title.TextTruncate=Enum.TextTruncate.AtEnd
-local subtitle=text(header,'ENGINE ISOLATED  /  V8.1.25.2',68,31,199,14,10,true,C.gold)
+local subtitle=text(header,'ENGINE ISOLATED  /  V8.1.26.0',68,31,199,14,10,true,C.gold)
 local titleRail=frame(header,63,46,88,1,C.gold,0,1)
 titleRail.Visible=false -- subtitle spacing replaces the rail
 -- Controls share the same baseline, hit-box, radius and visual weight.
@@ -3249,7 +3249,7 @@ styleReset.Activated:Connect(function()
  theme();applyPersonalization();fxSelect()
  if state.ux then state.ux.scheduleSave() end
 end)
-local function setMode(mode)
+local function setMode(mode,skipIntro)
  state.mode=mode
  shell.Visible=mode=='full'
  quick.Visible=mode=='quick'
@@ -3260,11 +3260,92 @@ local function setMode(mode)
  updateTitleShimmer(mode)
  state.syncQuickMotion()
  if state.paintLiveFarmTime then state.paintLiveFarmTime(true) end
- if state.visualUltra and state.visualUltra.setMode then state.visualUltra.setMode(mode) end
+ if not skipIntro and state.visualUltra and state.visualUltra.setMode then state.visualUltra.setMode(mode) end
  if state.ux then state.ux.scheduleSave() end
  if state.requestFullSnapshot then task.defer(state.requestFullSnapshot) end
  if state.requestLiveSnapshot then task.defer(state.requestLiveSnapshot) end
  end
+-- V8.1.26.0 | Royal Morph: UI-only transition between Full and Quick.
+-- A single reusable cover avoids cloning the console or changing its layout.
+-- No render-step connection, new loop, or modification of operational state.
+do
+ local morph={busy=false,revision=0,tracks={}}
+ state.royalMorph=morph
+ local cover=make('Frame',gui,{Name='RoyalMorphCover',Visible=false,Active=true,
+  BorderSizePixel=0,BackgroundColor3=Color3.fromRGB(10,10,8),BackgroundTransparency=1,
+  ZIndex=100,ClipsDescendants=true,Size=UDim2.fromOffset(1,1)})
+ local rounding=make('UICorner',cover,{CornerRadius=UDim.new(0,12)})
+ local rim=edge(cover,Color3.fromRGB(240,203,137),1,1)
+ local sheen=grad(cover,Color3.fromRGB(55,42,23),Color3.fromRGB(110,110,105),110)
+ -- UIGradient multiplies the base color; white carrier preserves actual palette.
+ cover.BackgroundColor3=Color3.fromRGB(255,255,255)
+ sheen.Color=ColorSequence.new(Color3.fromRGB(34,27,17),Color3.fromRGB(5,6,6))
+ local function rect(o)
+  local k=o==shell and shellScale.Scale or quickScale.Scale
+  return o.Position,UDim2.fromOffset(o.Size.X.Offset*k,o.Size.Y.Offset*k),o==shell and 18*k or 12*k
+ end
+ local function tween(o,goal,seconds,style)
+  local t=TS:Create(o,TweenInfo.new(seconds,style or Enum.EasingStyle.Quad,Enum.EasingDirection.Out),goal)
+  morph.tracks[#morph.tracks+1]=t
+  t:Play()
+  return t
+ end
+ function morph.cancel()
+  morph.revision=morph.revision+1
+  morph.busy=false
+  for _,t in ipairs(morph.tracks) do pcall(function()t:Cancel()end) end
+  morph.tracks={}
+  cover.Visible=false
+  if state.alive then
+   shell.Visible=state.mode=='full';quick.Visible=state.mode=='quick';mini.Visible=state.mode=='mini'
+  end
+ end
+ function morph.go(mode)
+  if morph.busy or not state.alive or state.mode==mode then return end
+  local from=state.mode
+  if not ((from=='full' and mode=='quick') or (from=='quick' and mode=='full'))
+   or (state.fx or 0)<2 or (state.ux and state.ux.perfPaused) then
+   setMode(mode);return
+  end
+  local source=from=='full' and shell or quick
+  local target=mode=='full' and shell or quick
+  local p1,s1,r1=rect(source)
+  local p2,s2,r2=rect(target)
+  morph.busy=true;morph.revision=morph.revision+1
+  local revision=morph.revision
+  local function valid() return state.alive and morph.revision==revision end
+  -- NORMAL: .42s total; existing Motion setting selects a slower/faster pace.
+  local pace=state.motion==1 and 1.25 or (state.motion==3 and .8 or 1)
+  task.spawn(function()
+   local ok,err=pcall(function()
+    if not valid() then return end
+    cover.Position=p1;cover.Size=s1;rounding.CornerRadius=UDim.new(0,r1)
+    cover.BackgroundTransparency=1;rim.Transparency=1;cover.Visible=true
+    tween(rim,{Transparency=.18},.08*pace)
+    local fade=tween(cover,{BackgroundTransparency=0},.08*pace)
+    fade.Completed:Wait()
+    if not valid() then return end
+    -- Switch using the original mode function; skip its redundant intro scale.
+    setMode(mode,true)
+    target.Visible=false
+    local travel=tween(cover,{Position=p2,Size=s2},.24*pace,Enum.EasingStyle.Quart)
+    tween(rounding,{CornerRadius=UDim.new(0,r2)},.24*pace,Enum.EasingStyle.Quart)
+    travel.Completed:Wait()
+    if not valid() then return end
+    target.Visible=true
+    tween(rim,{Transparency=1},.10*pace)
+    local reveal=tween(cover,{BackgroundTransparency=1},.10*pace)
+    reveal.Completed:Wait()
+   end)
+   if not valid() then return end
+   morph.cancel()
+   if not ok then
+    warn('NKMPJ UI morph fallback: '..tostring(err))
+    if state.mode~=mode then setMode(mode,true) end
+   end
+  end)
+ end
+end
 -- Restore settings only after all local UI callbacks have been defined.
 state.ux.applyRestored=function(target,oldMode)
  theme();applyPersonalization();fxSelect();selectPage(target)
@@ -3277,18 +3358,21 @@ local function clampPos(xx,yy,ww,hh)
         math.clamp(yy,3,math.max(3,view.Y-hh-3))
 end
 miniButton.Activated:Connect(function()
+ if state.royalMorph.busy then return end
  local xx,yy=clampPos(shell.Position.X.Offset+W*shellScale.Scale-MINI-8,shell.Position.Y.Offset+74,MINI,MINI)
  mini.Position=UDim2.fromOffset(xx,yy)
  setMode('mini')
 end)
 quickButton.Activated:Connect(function()
+ if state.royalMorph.busy then return end
  local xx,yy=clampPos(quick.Position.X.Offset,quick.Position.Y.Offset,qFootW,qFootH)
  quick.Position=UDim2.fromOffset(xx,yy)
- setMode('quick')
+ state.royalMorph.go('quick')
 end)
 qFull.Activated:Connect(function()
+ if state.royalMorph.busy then return end
  local xx,yy=clampPos(quick.Position.X.Offset,quick.Position.Y.Offset,W*shellScale.Scale,H*shellScale.Scale)
- shell.Position=UDim2.fromOffset(xx,yy);setMode('full')
+ shell.Position=UDim2.fromOffset(xx,yy);state.royalMorph.go('full')
 end)
 local moved=false
 mini.Activated:Connect(function()
@@ -3649,6 +3733,7 @@ local function destroy()
  if state.ux then state.ux.toastRevision=state.ux.toastRevision+1 end
  if state.ux then _G.NKMPJ_V81_UI_STATE=state.ux.capture() end
  state.alive=false;stopFX()
+ if state.royalMorph then state.royalMorph.cancel() end
  if state.liveBridge then pcall(state.liveBridge.close) end
  titanSession.alive=false
  if _G[SESSION_KEY]==titanSession then _G[SESSION_KEY]=nil end
@@ -3895,8 +3980,8 @@ local function installSmartCommandV75()
 -- Additive command deck. V7.4 farm, reset, map, logo, quick HUD and mini orb
 -- are preserved without changing their original engine functions.
 -- ============================================================================
-subtitle.Text='ENGINE ISOLATED  /  V8.1.25.2'
-lookStatus.Text='V8.1.25.2 • TYPOGRAPHY POLISH | LIVE SIZE'
+subtitle.Text='ENGINE ISOLATED  /  V8.1.26.0'
+lookStatus.Text='V8.1.26.0 • CINEMATIC MORPH | LIVE SIZE'
 gui.Name='NKMPJ_HUB_V80'
 local HttpService=game:GetService('HttpService')
 -- Existing JSON format stays compatible with V7.5 backups.
@@ -3930,7 +4015,7 @@ commandDeck.Visible=false
 local deckTop=frame(commandDeck,0,0,364,28,Color3.fromRGB(34,31,24),9)
 local backButton=button(deckTop,'‹',4,3,29,22,C.raised,C.gold,7)
 backButton.TextSize=22
-local deckTitle=text(deckTop,'🧠 ศูนย์ควบคุมขั้นสูง  /  V8.1.25.2',41,1,290,25,12,true,C.pearl)
+local deckTitle=text(deckTop,'🧠 ศูนย์ควบคุมขั้นสูง  /  V8.1.26.0',41,1,290,25,12,true,C.pearl)
 local deckDot=frame(deckTop,343,11,7,7,C.mint,4)
 
 local deckNav=frame(commandDeck,0,32,364,29,Color3.fromRGB(21,22,18),9)
