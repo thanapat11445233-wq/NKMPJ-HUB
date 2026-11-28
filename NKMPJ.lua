@@ -1,4 +1,4 @@
--- NKMPJ HUB V8.1.25.0 | ROYAL SPECTRUM SIGNATURE | ONE FILE
+-- NKMPJ HUB V8.1.25.2 | ROYAL SPECTRUM | TYPOGRAPHY POLISH | ONE FILE
 -- UI-only update: 184 x 122 Thai Quick HUD; existing controls and status source retained.
 -- UI-only revision of V8.1.17.5; original core retained byte-for-byte.
 -- Quick Eco: FX OFF/SOFT; Ambient: FX NORMAL/ELITE. Full Console retains existing FX.
@@ -72,7 +72,7 @@ if type(previousSession)=='table' then
  end
  previousSession.alive=false
 end
-local titanSession={alive=true,version='8.1.23.0',startedAt=os.clock()}
+local titanSession={alive=true,version='8.1.25.1',startedAt=os.clock()}
 _G[SESSION_KEY]=titanSession
 -- On re-execute, shut down the PREVIOUS UI/core BEFORE the new farm core binds keys.
 do
@@ -2446,7 +2446,7 @@ local haloGradient=make('UIGradient',logoStroke,{Color=ColorSequence.new({
  ColorSequenceKeypoint.new(.7,C.pearl),ColorSequenceKeypoint.new(1,C.gold)}),Rotation=0})
 local title=text(header,'NKMPJ HUB ✨',67,6,203,27,18,true,C.pearl)
 title.TextTruncate=Enum.TextTruncate.AtEnd
-local subtitle=text(header,'ENGINE ISOLATED  /  V8.1.25.0',68,31,199,14,10,true,C.gold)
+local subtitle=text(header,'ENGINE ISOLATED  /  V8.1.25.2',68,31,199,14,10,true,C.gold)
 local titleRail=frame(header,63,46,88,1,C.gold,0,1)
 titleRail.Visible=false -- subtitle spacing replaces the rail
 -- Controls share the same baseline, hit-box, radius and visual weight.
@@ -2755,9 +2755,20 @@ state.quickFx.buttonPalette={
  blue={Color3.fromRGB(43,83,120),Color3.fromRGB(22,47,72),Color3.fromRGB(11,24,38),Color3.fromRGB(88,145,188)},
  ruby={Color3.fromRGB(110,54,63),Color3.fromRGB(63,29,37),Color3.fromRGB(30,13,19),Color3.fromRGB(178,91,105)}
 }
+-- Use a real colored background, with a neutral luminance bevel. Even if the
+-- gradient is not rendered, each control retains its independent hue.
 state.quickFx.buttonColors=function(name)
- local p=state.quickFx.buttonPalette[name]
- return ColorSequence.new({ColorSequenceKeypoint.new(0,p[1]),ColorSequenceKeypoint.new(.48,p[2]),ColorSequenceKeypoint.new(1,p[3])})
+ return ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(255,255,255)),ColorSequenceKeypoint.new(.48,Color3.fromRGB(180,180,180)),ColorSequenceKeypoint.new(1,Color3.fromRGB(112,112,112))})
+end
+state.quickFx.buttonVisuals={}
+state.quickFx.paintButton=function(b,style)
+ local visual=state.quickFx.buttonVisuals[b]
+ if not visual then return end
+ local p=state.quickFx.buttonPalette[style]
+ b.BackgroundColor3=p[1]
+ visual.stroke.Color=p[4]
+ visual.gradient.Color=state.quickFx.buttonColors(style)
+ visual.label.TextColor3=Color3.fromRGB(255,255,255)
 end
 state.quickFx.decorate=function(b,caption,style)
  b.ZIndex=5;b.TextTransparency=1;b.AutoButtonColor=false
@@ -2766,11 +2777,12 @@ state.quickFx.decorate=function(b,caption,style)
  shadow.ZIndex=3
  local stroke=edge(b,state.quickFx.buttonPalette[style][4],.12,1)
  stroke.ApplyStrokeMode=Enum.ApplyStrokeMode.Border
- b.BackgroundColor3=Color3.fromRGB(255,255,255)
+ b.BackgroundColor3=state.quickFx.buttonPalette[style][1]
  local gradient=make('UIGradient',b,{Color=state.quickFx.buttonColors(style),Rotation=110})
  local lbl=text(b,caption,2,17,44,14,10,true,Color3.fromRGB(255,255,255),Enum.TextXAlignment.Center)
  lbl.ZIndex=7;lbl.Active=false;lbl.TextTruncate=Enum.TextTruncate.None;lbl.TextScaled=true
  make('UITextSizeConstraint',lbl,{MinTextSize=8,MaxTextSize=10})
+ state.quickFx.buttonVisuals[b]={stroke=stroke,label=lbl,gradient=gradient}
  local scaler=make('UIScale',b,{Scale=1})
  b.Activated:Connect(function()
   scaler.Scale=.95
@@ -2834,26 +2846,38 @@ perfectCircle(qRingBg)
 state.quickFx.ringStroke=edge(qRingBg,Color3.fromRGB(126,99,54),.30,1)
 local qRingArt=make('ImageLabel',qRingBg,{
  Name='SmoothProgressArc',Position=UDim2.fromOffset(0,0),Size=UDim2.fromOffset(56,56),
- BackgroundTransparency=1,Image=_G.NKMPJ_RING_ATLAS_URI or '',ImageRectSize=Vector2.new(80,80),
+ BackgroundTransparency=1,Image=_G.NKMPJ_RING_ATLAS_URI or '',ImageColor3=Color3.fromRGB(255,255,255),ImageRectSize=Vector2.new(80,80),
  ImageRectOffset=Vector2.new(0,0),ImageTransparency=.02,ScaleType=Enum.ScaleType.Stretch,ZIndex=3})
 local qRingStep=-1
 state.quickFx.completionStroke=edge(qRingBg,Color3.fromRGB(255,222,155),1,1)
 state.quickFx.completionTween=TS:Create(state.quickFx.completionStroke,TweenInfo.new(.48,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut,0,true),{Transparency=.08})
 local qRingIcon=text(state.quickFx.hidden,'',0,0,1,1,10,true,C.gold)
-local qPercent=text(qRingBg,'--%',7,19,42,18,9,false,Color3.fromRGB(242,255,248),Enum.TextXAlignment.Center)
+local qPercent=text(qRingBg,'--%',7,19,42,18,8,true,Color3.fromRGB(255,255,255),Enum.TextXAlignment.Center)
 qPercent.TextScaled=false;qPercent.TextWrapped=false;qPercent.ZIndex=4
 qPercent.TextTruncate=Enum.TextTruncate.None
 local qHint=text(qHeader,'',0,33,92,18,10,false,Color3.fromRGB(232,191,121),Enum.TextXAlignment.Center)
 qHint.ZIndex=4;qHint.Visible=false;qHint.Active=false
-local qState=text(qHeader,'พร้อมเริ่ม',0,33,92,18,10,false,C.mint,Enum.TextXAlignment.Center)
+local qState=text(qHeader,'พร้อมเริ่ม',0,33,92,18,10,true,C.mint,Enum.TextXAlignment.Center)
  qState.ZIndex=4;qState.Active=false;qState.TextTruncate=Enum.TextTruncate.AtEnd
-state.qFarmTime=text(qHeader,'00:00:00',0,7,92,23,16,false,Color3.fromRGB(255,255,255),Enum.TextXAlignment.Center)
+state.qFarmTime=text(qHeader,'00:00:00',0,7,92,23,16,true,Color3.fromRGB(255,255,255),Enum.TextXAlignment.Center)
 state.qFarmTime.ZIndex=3
 state.qFarmTime.TextScaled=false;state.qFarmTime.TextWrapped=false;state.qFarmTime.Active=false
 local qToggle=button(quick,'▶',10,80,48,33,Color3.fromRGB(255,255,255),Color3.fromRGB(255,241,207),6)
 state.quickFx.toggleStroke,state.quickFx.toggleLabel,state.quickFx.toggleGradient=state.quickFx.decorate(qToggle,'เริ่ม','green')
 state.quickFx.toggleGlyph=text(qToggle,'▶',0,1,48,16,14,true,Color3.fromRGB(157,246,198),Enum.TextXAlignment.Center)
 state.quickFx.toggleGlyph.ZIndex=7;state.quickFx.toggleGlyph.Active=false
+-- Quick palette is independent of the full console's selectable theme.
+-- Reapply at UI transitions, not on a new polling or render loop.
+state.quickFx.paintSpectrum=function()
+ state.quickFx.paintButton(qFull,'blue')
+ state.quickFx.paintButton(state.quickFx.exit,'ruby')
+ state.quickFx.paintButton(qToggle,core.on and 'amber' or 'green')
+ qPercent.TextColor3=Color3.fromRGB(255,255,255)
+ state.qFarmTime.TextColor3=Color3.fromRGB(255,255,255)
+ qRingArt.ImageColor3=Color3.fromRGB(255,255,255)
+ state.quickFx.toggleGlyph.TextColor3=core.on and Color3.fromRGB(255,224,163) or Color3.fromRGB(157,246,198)
+end
+state.quickFx.paintSpectrum()
 local qProgressBg=frame(quick,0,0,1,1,C.black,0);qProgressBg.Visible=false
 local qProgress=frame(qProgressBg,0,0,1,1,C.gold,0)
 local qProgressTween=nil
@@ -3141,7 +3165,7 @@ local function theme()
   if obj:IsA('UIStroke') then obj.Color=prime else obj.BackgroundColor3=prime end
  end
  eyebrow.TextColor3=prime;subtitle.TextColor3=prime
- percent.TextColor3=prime;qPercent.TextColor3=Color3.fromRGB(242,255,248);timeLabel.TextColor3=prime
+ percent.TextColor3=prime;timeLabel.TextColor3=prime
  qRingStep=-1
  state.quickFx.phase=nil
  qRingArt.ImageRectOffset=Vector2.new(0,0)
@@ -3150,7 +3174,7 @@ local function theme()
  lookStatus.TextColor3=prime;hint.TextColor3=C.muted
  progressGradient.Color=ColorSequence.new(pal.a,pal.b)
  startGrad.Color=ColorSequence.new(pal.a,pal.b)
- qToggle.BackgroundColor3=Color3.fromRGB(255,255,255)
+ state.quickFx.paintSpectrum()
  start.BackgroundColor3=prime
  save.BackgroundColor3=prime
  rateLabel.TextColor3=prime
@@ -3159,6 +3183,7 @@ local function theme()
   b.BackgroundColor3=i==state.theme and Color3.fromRGB(92,76,47) or C.raised
  end
  if state.visualUltra and state.visualUltra.applyTheme then state.visualUltra.applyTheme() end
+ state.quickFx.paintSpectrum()
 end
 local function selectPage(i)
  state.page=i
@@ -3228,6 +3253,7 @@ local function setMode(mode)
  state.mode=mode
  shell.Visible=mode=='full'
  quick.Visible=mode=='quick'
+ if mode=='quick' then state.quickFx.paintSpectrum();state.quickFx.phase=nil end
  if mode~='quick' then state.quickFx.completionTween:Cancel();state.quickFx.completionStroke.Transparency=1 end
  mini.Visible=mode=='mini'
  if mode=='full' then startFX() else stopFX() end
@@ -3369,7 +3395,7 @@ local function paintLiveSize(p,cap,allowFullSnapshot)
  elseif state.mode=='quick' then
   if qPercent.Text~=percentText then
    qPercent.Text=percentText
-   qPercent.TextSize=#percentText>=6 and 8 or 9
+   qPercent.TextSize=#percentText>=6 and 7 or 8
   end
   if qHint.Visible then qHint.Visible=false end
   if not qState.Visible then qState.Visible=true end
@@ -3449,14 +3475,7 @@ state.paintOperationalStatus=function()
    state.quickFx.phase=key
    local tint=amber and Color3.fromRGB(198,145,75) or (running and Color3.fromRGB(100,226,167) or Color3.fromRGB(126,99,54))
    state.quickFx.ringStroke.Color=tint
-   qPercent.TextColor3=Color3.fromRGB(242,255,248)
-   state.qFarmTime.TextColor3=Color3.fromRGB(255,255,255)
-   qToggle.BackgroundColor3=Color3.fromRGB(255,255,255)
-   qToggle.TextColor3=core.on and Color3.fromRGB(255,213,139) or Color3.fromRGB(255,231,175)
-   local buttonStyle=core.on and 'amber' or 'green'
-   state.quickFx.toggleGradient.Color=state.quickFx.buttonColors(buttonStyle)
-   state.quickFx.toggleStroke.Color=state.quickFx.buttonPalette[buttonStyle][4]
-   state.quickFx.toggleGlyph.TextColor3=core.on and Color3.fromRGB(255,224,163) or Color3.fromRGB(157,246,198)
+   state.quickFx.paintSpectrum()
   end
   if not (state.ux and (state.ux.toastQuickUntil or 0)>os.clock()) then
    local displayed='● '..(state.quickFx.statusShort[small] or small)
@@ -3876,8 +3895,8 @@ local function installSmartCommandV75()
 -- Additive command deck. V7.4 farm, reset, map, logo, quick HUD and mini orb
 -- are preserved without changing their original engine functions.
 -- ============================================================================
-subtitle.Text='ENGINE ISOLATED  /  V8.1.25.0'
-lookStatus.Text='V8.1.25.0 • ROYAL SPECTRUM | LIVE SIZE'
+subtitle.Text='ENGINE ISOLATED  /  V8.1.25.2'
+lookStatus.Text='V8.1.25.2 • TYPOGRAPHY POLISH | LIVE SIZE'
 gui.Name='NKMPJ_HUB_V80'
 local HttpService=game:GetService('HttpService')
 -- Existing JSON format stays compatible with V7.5 backups.
@@ -3911,7 +3930,7 @@ commandDeck.Visible=false
 local deckTop=frame(commandDeck,0,0,364,28,Color3.fromRGB(34,31,24),9)
 local backButton=button(deckTop,'‹',4,3,29,22,C.raised,C.gold,7)
 backButton.TextSize=22
-local deckTitle=text(deckTop,'🧠 ศูนย์ควบคุมขั้นสูง  /  V8.1.25.0',41,1,290,25,12,true,C.pearl)
+local deckTitle=text(deckTop,'🧠 ศูนย์ควบคุมขั้นสูง  /  V8.1.25.2',41,1,290,25,12,true,C.pearl)
 local deckDot=frame(deckTop,343,11,7,7,C.mint,4)
 
 local deckNav=frame(commandDeck,0,32,364,29,Color3.fromRGB(21,22,18),9)
